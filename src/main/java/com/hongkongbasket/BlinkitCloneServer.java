@@ -82,7 +82,7 @@ public class BlinkitCloneServer {
                 return;
             }
             List<Product> products = ProductStore.loadProducts();
-            String html = renderHomePage(products, "");
+            String html = renderHomePage(products);
             writeResponse(exchange, 200, html);
         }
     }
@@ -129,9 +129,9 @@ public class BlinkitCloneServer {
         }
     }
 
-    static String renderHomePage(List<Product> products, String contextPath) {
+    static String renderHomePage(List<Product> products) {
         String cards = products.stream()
-                .map(product -> renderProductCard(product, contextPath))
+                .map(BlinkitCloneServer::renderProductCard)
                 .collect(Collectors.joining("\n"));
         String categoryButtons = renderCategoryButtons(products);
 
@@ -432,9 +432,9 @@ public class BlinkitCloneServer {
         return builder.toString();
     }
 
-    static String renderProductCard(Product product, String contextPath) {
+    static String renderProductCard(Product product) {
         return "<article class=\"product-card\" data-category=\"" + escapeHtml(product.getCategory()) + "\">" +
-                "<img class=\"product-image\" src=\"" + escapeHtml(contextPath + product.getImageUrl()) + "\" alt=\"" + escapeHtml(product.getName()) + "\" loading=\"lazy\" onerror=\"this.onerror=null;this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2Y4ZmFmZiIvPjx0ZXh0IHg9IjEwMCIgeT0iNzUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzMzMzMzMyIHRleHQtYW5jaG9yPSJtaWRkbGUiPkltYWdlPC90ZXh0Pjwvc3ZnPg==';\" />" +
+                "<img class=\"product-image\" src=\"" + escapeHtml(product.getImageUrl()) + "\" alt=\"" + escapeHtml(product.getName()) + "\" loading=\"lazy\" onerror=\"this.onerror=null;this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2Y4ZmFmZiIvPjx0ZXh0IHg9IjEwMCIgeT0iNzUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzMzMzMzMyIHRleHQtYW5jaG9yPSJtaWRkbGUiPkltYWdlPC90ZXh0Pjwvc3ZnPg==';\" />" +
                 "<div class=\"category\">" + escapeHtml(product.getCategory()) + "</div>" +
                 "<h2>" + escapeHtml(product.getName()) + "</h2>" +
                 "<div class=\"price\">HK$ " + product.getPriceHkd() + ".00</div>" +
