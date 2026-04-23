@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hong-Kong-Basket</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background: #f3f7fb; color: #1f2937; }
+    header { background: #006d75; color: white; padding: 26px 32px; }
+    header h1 { margin: 0 0 8px; font-size: 2.4rem; }
+    header p { margin: 0; opacity: 0.88; }
+    .container { max-width: 1200px; margin: 24px auto; padding: 0 24px; }
+    .topbar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; align-items: center; margin-bottom: 18px; }
+    .topbar .label { font-size: 0.95rem; color: #374151; }
+    .categories { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 24px; }
+    .category-button { border: 1px solid #d1d5db; background: white; color: #374151; border-radius: 999px; padding: 10px 16px; cursor: pointer; transition: all 0.2s ease; }
+    .category-button.active, .category-button:hover { background: #06b6d4; border-color: #06b6d4; color: white; }
+    .content { display: grid; grid-template-columns: 1.8fr 1fr; gap: 24px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+    .product-card { background: white; border-radius: 20px; box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08); padding: 22px; border: 1px solid #e5e7eb; }
+    .product-card .product-image { width: 100%; height: 150px; object-fit: cover; border-radius: 12px; margin-bottom: 16px; background: #f8fafc; }
+    .product-card h2 { margin: 0 0 10px; font-size: 1.15rem; }
+    .product-card .category { font-size: 0.85rem; color: #64748b; margin-bottom: 12px; }
+    .product-card .price { color: #0f766e; font-weight: 700; font-size: 1.15rem; margin: 10px 0; }
+    .product-card p { margin: 0 0 16px; color: #475569; line-height: 1.5; }
+    .add-button { display: inline-flex; align-items: center; justify-content: center; background: #0f766e; color: white; border: none; border-radius: 12px; padding: 12px 16px; cursor: pointer; font-weight: 600; transition: background 0.2s ease; }
+    .add-button:hover { background: #115e59; }
+    .cart-panel { background: white; border-radius: 20px; border: 1px solid #e5e7eb; padding: 24px; box-shadow: 0 20px 40px rgba(15, 23, 42, 0.06); }
+    .cart-panel h2 { margin: 0 0 16px; font-size: 1.3rem; }
+    .cart-items { min-height: 180px; margin-bottom: 16px; color: #475569; }
+    .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #e5e7eb; }
+    .cart-item:last-child { border-bottom: none; }
+    .cart-item button { border: none; background: transparent; color: #ef4444; cursor: pointer; }
+    .cart-total { display: flex; justify-content: space-between; align-items: center; font-size: 1.05rem; font-weight: 700; margin-bottom: 18px; }
+    .checkout-button { width: 100%; padding: 14px 16px; border: none; border-radius: 14px; background: #0f766e; color: white; font-size: 1rem; font-weight: 700; cursor: pointer; transition: background 0.2s ease; }
+    .checkout-button:disabled { opacity: 0.55; cursor: not-allowed; }
+    .footer { text-align: center; margin: 40px 0 24px; color: #64748b; }
+    .modal { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.55); display: flex; align-items: center; justify-content: center; padding: 24px; z-index: 100; }
+    .modal.hidden { display: none; }
+    .modal-content { background: white; border-radius: 24px; width: min(560px, 100%); padding: 28px; position: relative; }
+    .close-button { position: absolute; top: 16px; right: 16px; border: none; background: transparent; font-size: 1.4rem; cursor: pointer; color: #475569; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; margin-bottom: 8px; font-size: 0.95rem; color: #334155; }
+    .form-group input, .form-group select { width: 100%; padding: 12px 14px; border-radius: 14px; border: 1px solid #cbd5e1; font-size: 0.95rem; }
+    .order-summary { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 16px; padding: 16px; margin-bottom: 20px; white-space: pre-wrap; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Hong-Kong-Basket</h1>
+    <p>Shop groceries in HKD with a simple cart and secure payment gateway experience.</p>
+  </header>
+  <main class="container">
+    <div class="topbar">
+      <div class="label">Shop by Category</div>
+      <div class="label">Secure checkout with HK Online Pay</div>
+    </div>
+    <div class="categories">
+<button type="button" class="category-button active" data-category="All">All</button>
+<button type="button" class="category-button" data-category="Dairy">Dairy</button>
+<button type="button" class="category-button" data-category="Bakery">Bakery</button>
+<button type="button" class="category-button" data-category="Eggs">Eggs</button>
+<button type="button" class="category-button" data-category="Household">Household</button>
+<button type="button" class="category-button" data-category="Beverages">Beverages</button>
+<button type="button" class="category-button" data-category="Vegetables">Vegetables</button>
+    </div>
+    <div class="content">
+      <section>
+        <h2>All Products</h2>
+        <div class="grid" id="product-grid">
+<article class="product-card" data-category="Dairy"><img class="product-image" src="/images/P001.jpg" alt="Amul Milk" loading="lazy" onerror="this.onerror=null;this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2Y4ZmFmZiIvPjx0ZXh0IHg9IjEwMCIgeT0iNzUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzMzMzMzMyIHRleHQtYW5jaG9yPSJtaWRkbGUiPkltYWdlPC90ZXh0Pjwvc3ZnPg==';" /><div class="category">Dairy</div><h2>Amul Milk</h2><div class="price">HK$ 28.00</div><p>Fresh cow milk in a 1L pack</p><button type="button" class="add-button" data-id="P001" data-name="Amul Milk" data-price="28">Add to Cart</button></article>
+<article class="product-card" data-category="Bakery"><img class="product-image" src="/images/P002.jpg" alt="Brown Bread" loading="lazy" onerror="this.onerror=null;this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2Y4ZmFmZiIvPjx0ZXh0IHg9IjEwMCIgeT0iNzUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzMzMzMzMyIHRleHQtYW5jaG9yPSJtaWRkbGUiPkltYWdlPC90ZXh0Pjwvc3ZnPg==';" /><div class="category">Bakery</div><h2>Brown Bread</h2><div class="price">HK$ 38.00</div><p>Whole wheat loaf, freshly baked</p><button type="button" class="add-button" data-id="P002" data-name="Brown Bread" data-price="38">Add to Cart</button></article>
+<article class="product-card" data-category="Eggs"><img class="product-image" src="/images/P003.jpg" alt="Farm Eggs" loading="lazy" onerror="this.onerror=null;this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2Y4ZmFmZiIvPjx0ZXh0IHg9IjEwMCIgeT0iNzUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzMzMzMzMyIHRleHQtYW5jaG9yPSJtaWRkbGUiPkltYWdlPC90ZXh0Pjwvc3ZnPg==';" /><div class="category">Eggs</div><h2>Farm Eggs</h2><div class="price">HK$ 58.00</div><p>12 fresh farm eggs</p><button type="button" class="add-button" data-id="P003" data-name="Farm Eggs" data-price="58">Add to Cart</button></article>
+<article class="product-card" data-category="Household"><img class="product-image" src="/images/P004.jpg" alt="Surf Detergent" loading="lazy" onerror="this.onerror=null;this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2Y4ZmFmZiIvPjx0ZXh0IHg9IjEwMCIgeT0iNzUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzMzMzMzMyIHRleHQtYW5jaG9yPSJtaWRkbGUiPkltYWdlPC90ZXh0Pjwvc3ZnPg==';" /><div class="category">Household</div><h2>Surf Detergent</h2><div class="price">HK$ 110.00</div><p>Powerful laundry detergent</p><button type="button" class="add-button" data-id="P004" data-name="Surf Detergent" data-price="110">Add to Cart</button></article>
+<article class="product-card" data-category="Beverages"><img class="product-image" src="/images/P005.jpg" alt="Coca Cola" loading="lazy" onerror="this.onerror=null;this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2Y4ZmFmZiIvPjx0ZXh0IHg9IjEwMCIgeT0iNzUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzMzMzMzMyIHRleHQtYW5jaG9yPSJtaWRkbGUiPkltYWdlPC90ZXh0Pjwvc3ZnPg==';" /><div class="category">Beverages</div><h2>Coca Cola</h2><div class="price">HK$ 42.00</div><p>500ml soft drink bottle</p><button type="button" class="add-button" data-id="P005" data-name="Coca Cola" data-price="42">Add to Cart</button></article>
+<article class="product-card" data-category="Vegetables"><img class="product-image" src="/images/P006.jpg" alt="Fresh Tomatoes" loading="lazy" onerror="this.onerror=null;this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2Y4ZmFmZiIvPjx0ZXh0IHg9IjEwMCIgeT0iNzUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzMzMzMzMyIHRleHQtYW5jaG9yPSJtaWRkbGUiPkltYWdlPC90ZXh0Pjwvc3ZnPg==';" /><div class="category">Vegetables</div><h2>Fresh Tomatoes</h2><div class="price">HK$ 30.00</div><p>Ripe red tomatoes per kg</p><button type="button" class="add-button" data-id="P006" data-name="Fresh Tomatoes" data-price="30">Add to Cart</button></article>
+<article class="product-card" data-category="Vegetables"><img class="product-image" src="/images/P007.jpg" alt="Yellow Onions" loading="lazy" onerror="this.onerror=null;this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2Y4ZmFmZiIvPjx0ZXh0IHg9IjEwMCIgeT0iNzUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzMzMzMzMyIHRleHQtYW5jaG9yPSJtaWRkbGUiPkltYWdlPC90ZXh0Pjwvc3ZnPg==';" /><div class="category">Vegetables</div><h2>Yellow Onions</h2><div class="price">HK$ 26.00</div><p>Golden onions per kg</p><button type="button" class="add-button" data-id="P007" data-name="Yellow Onions" data-price="26">Add to Cart</button></article>
+<article class="product-card" data-category="Vegetables"><img class="product-image" src="/images/P008.jpg" alt="Potatoes" loading="lazy" onerror="this.onerror=null;this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2Y4ZmFmZiIvPjx0ZXh0IHg9IjEwMCIgeT0iNzUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzMzMzMzMyIHRleHQtYW5jaG9yPSJtaWRkbGUiPkltYWdlPC90ZXh0Pjwvc3ZnPg==';" /><div class="category">Vegetables</div><h2>Potatoes</h2><div class="price">HK$ 22.00</div><p>Starchy potatoes per kg</p><button type="button" class="add-button" data-id="P008" data-name="Potatoes" data-price="22">Add to Cart</button></article>
+<article class="product-card" data-category="Vegetables"><img class="product-image" src="/images/P009.jpg" alt="Fresh Carrots" loading="lazy" onerror="this.onerror=null;this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2Y4ZmFmZiIvPjx0ZXh0IHg9IjEwMCIgeT0iNzUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzMzMzMzMyIHRleHQtYW5jaG9yPSJtaWRkbGUiPkltYWdlPC90ZXh0Pjwvc3ZnPg==';" /><div class="category">Vegetables</div><h2>Fresh Carrots</h2><div class="price">HK$ 34.00</div><p>Crisp orange carrots per kg</p><button type="button" class="add-button" data-id="P009" data-name="Fresh Carrots" data-price="34">Add to Cart</button></article>
+<article class="product-card" data-category="Vegetables"><img class="product-image" src="/images/P010.jpg" alt="Broccoli" loading="lazy" onerror="this.onerror=null;this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2Y4ZmFmZiIvPjx0ZXh0IHg9IjEwMCIgeT0iNzUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzMzMzMzMyIHRleHQtYW5jaG9yPSJtaWRkbGUiPkltYWdlPC90ZXh0Pjwvc3ZnPg==';" /><div class="category">Vegetables</div><h2>Broccoli</h2><div class="price">HK$ 52.00</div><p>Green broccoli per piece</p><button type="button" class="add-button" data-id="P010" data-name="Broccoli" data-price="52">Add to Cart</button></article>
+<article class="product-card" data-category="Vegetables"><img class="product-image" src="/images/P011.jpg" alt="Spinach" loading="lazy" onerror="this.onerror=null;this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2Y4ZmFmZiIvPjx0ZXh0IHg9IjEwMCIgeT0iNzUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzMzMzMzMyIHRleHQtYW5jaG9yPSJtaWRkbGUiPkltYWdlPC90ZXh0Pjwvc3ZnPg==';" /><div class="category">Vegetables</div><h2>Spinach</h2><div class="price">HK$ 28.00</div><p>Fresh spinach bunch</p><button type="button" class="add-button" data-id="P011" data-name="Spinach" data-price="28">Add to Cart</button></article>
+<article class="product-card" data-category="Vegetables"><img class="product-image" src="/images/P012.jpg" alt="Bell Peppers" loading="lazy" onerror="this.onerror=null;this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2Y4ZmFmZiIvPjx0ZXh0IHg9IjEwMCIgeT0iNzUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzMzMzMzMyIHRleHQtYW5jaG9yPSJtaWRkbGUiPkltYWdlPC90ZXh0Pjwvc3ZnPg==';" /><div class="category">Vegetables</div><h2>Bell Peppers</h2><div class="price">HK$ 48.00</div><p>Mixed bell peppers per kg</p><button type="button" class="add-button" data-id="P012" data-name="Bell Peppers" data-price="48">Add to Cart</button></article>        </div>
+      </section>
+      <aside class="cart-panel">
+        <h2>Your Cart</h2>
+        <div class="cart-items" id="cart-items">Your cart is empty</div>
+        <div class="cart-total">
+          <span>Total</span>
+          <span id="cart-total">HK$ 0.00</span>
+        </div>
+        <button id="checkout-button" class="checkout-button" disabled>Checkout</button>
+      </aside>
+    </div>
+  </main>
+  <div class="footer">Prices shown in Hong Kong Dollars (HKD). Experience checkout with a simulated payment gateway.</div>
+  <div id="checkout-dialog" class="modal hidden">
+    <div class="modal-content">
+      <button class="close-button" type="button" onclick="closeCheckout()">×</button>
+      <h2>Secure Payment</h2>
+      <div class="order-summary" id="checkout-summary">Preparing your order...</div>
+      <form id="checkout-form">
+        <div class="form-group">
+          <label for="customerName">Name on card</label>
+          <input id="customerName" name="customerName" required placeholder="Hong Kong Basket Customer">
+        </div>
+        <div class="form-group">
+          <label for="paymentMethod">Payment gateway</label>
+          <select id="paymentMethod" name="paymentMethod">
+            <option>HK Online Pay</option>
+            <option>UnionPay Secure</option>
+            <option>Global Pay</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="cardNumber">Card number</label>
+          <input id="cardNumber" name="cardNumber" required placeholder="4242 4242 4242 4242">
+        </div>
+        <div class="form-group">
+          <label for="expiry">Expiry</label>
+          <input id="expiry" name="expiry" required placeholder="MM/YY">
+        </div>
+        <div class="form-group">
+          <label for="cvv">CVV</label>
+          <input id="cvv" name="cvv" required placeholder="123">
+        </div>
+        <input type="hidden" id="order-details" name="orderDetails">
+        <input type="hidden" id="order-total" name="orderTotal">
+        <button type="submit" class="checkout-button">Pay HK$ <span id="checkout-amount">0.00</span></button>
+      </form>
+    </div>
+  </div>
+  <script>
+    const categoryButtons = document.querySelectorAll('.category-button');
+    const productCards = document.querySelectorAll('.product-card');
+    const cartItemsElement = document.getElementById('cart-items');
+    const cartTotalValue = document.getElementById('cart-total');
+    const checkoutButton = document.getElementById('checkout-button');
+    const checkoutDialog = document.getElementById('checkout-dialog');
+    const checkoutForm = document.getElementById('checkout-form');
+    const checkoutSummary = document.getElementById('checkout-summary');
+    const checkoutAmount = document.getElementById('checkout-amount');
+    const orderDetailsInput = document.getElementById('order-details');
+    const orderTotalInput = document.getElementById('order-total');
+    let cart = [];
+    function filterCategory(category) {
+      productCards.forEach(card => {
+        const matches = category === 'All' || card.dataset.category === category;
+        card.style.display = matches ? 'block' : 'none';
+      });
+    }
+    categoryButtons.forEach(button => {
+      button.addEventListener('click', event => {
+        event.preventDefault();
+        categoryButtons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+        filterCategory(button.dataset.category);
+      });
+    });
+    document.querySelectorAll('.add-button').forEach(button => {
+      button.addEventListener('click', () => {
+        const item = {
+          id: button.dataset.id,
+          name: button.dataset.name,
+          price: Number(button.dataset.price),
+          quantity: 1
+        };
+        const existing = cart.find(entry => entry.id === item.id);
+        if (existing) { existing.quantity += 1; } else { cart.push(item); }
+        renderCart();
+      });
+    });
+    function renderCart() {
+      if (cart.length === 0) {
+        cartItemsElement.textContent = 'Your cart is empty';
+        cartTotalValue.textContent = 'HK$ 0.00';
+        checkoutButton.disabled = true;
+        return;
+      }
+      cartItemsElement.innerHTML = '';
+      let total = 0;
+      cart.forEach(item => {
+        const lineTotal = item.quantity * item.price;
+        total += lineTotal;
+        const row = document.createElement('div');
+        row.className = 'cart-item';
+        row.innerHTML = `<div>${item.quantity}× ${item.name}</div><div>${formatPrice(lineTotal)} <button data-id='${item.id}'>Remove</button></div>`;
+        row.querySelector('button').addEventListener('click', () => {
+          cart = cart.filter(entry => entry.id !== item.id);
+          renderCart();
+        });
+        cartItemsElement.appendChild(row);
+      });
+      cartTotalValue.textContent = formatPrice(total);
+      checkoutButton.disabled = false;
+    }
+    function formatPrice(value) {
+      return 'HK$ ' + value.toFixed(2);
+    }
+    checkoutButton.addEventListener('click', () => {
+      openCheckout();
+    });
+    function openCheckout() {
+      const items = cart.map(item => `${item.quantity}× ${item.name} - ${formatPrice(item.quantity * item.price)}`).join('
+');
+      const total = cart.reduce((sum, item) => sum + item.quantity * item.price, 0);
+      checkoutSummary.textContent = `Order details:
+${items}
+
+Total: ${formatPrice(total)}
+
+Payment gateway: HK Online Pay`;
+      orderDetailsInput.value = items;
+      orderTotalInput.value = total.toFixed(2);
+      checkoutAmount.textContent = total.toFixed(2);
+      checkoutDialog.classList.remove('hidden');
+    }
+    function closeCheckout() {
+      checkoutDialog.classList.add('hidden');
+    }
+    checkoutForm.addEventListener('submit', event => {
+      event.preventDefault();
+      const formData = new URLSearchParams(new FormData(checkoutForm));
+      fetch('/checkout', { method: 'POST', body: formData })
+        .then(response => response.text())
+        .then(html => {
+          document.open();
+          document.write(html);
+          document.close();
+        });
+    });
+    window.closeCheckout = closeCheckout;
+    renderCart();
+  </script>
+</body>
+</html>
