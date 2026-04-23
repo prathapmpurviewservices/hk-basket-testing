@@ -129,7 +129,7 @@ public class BlinkitCloneServer {
         }
     }
 
-    private static String renderHomePage(List<Product> products) {
+    static String renderHomePage(List<Product> products) {
         String cards = products.stream()
                 .map(BlinkitCloneServer::renderProductCard)
                 .collect(Collectors.joining("\n"));
@@ -414,7 +414,7 @@ public class BlinkitCloneServer {
                 "</html>";
     }
 
-    private static String renderCategoryButtons(List<Product> products) {
+    static String renderCategoryButtons(List<Product> products) {
         List<String> categories = products.stream()
                 .map(Product::getCategory)
                 .distinct()
@@ -432,7 +432,7 @@ public class BlinkitCloneServer {
         return builder.toString();
     }
 
-    private static String renderProductCard(Product product) {
+    static String renderProductCard(Product product) {
         return "<article class=\"product-card\" data-category=\"" + escapeHtml(product.getCategory()) + "\">" +
                 "<img class=\"product-image\" src=\"" + escapeHtml(product.getImageUrl()) + "\" alt=\"" + escapeHtml(product.getName()) + "\" loading=\"lazy\" onerror=\"this.onerror=null;this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2Y4ZmFmZiIvPjx0ZXh0IHg9IjEwMCIgeT0iNzUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzMzMzMzMyIHRleHQtYW5jaG9yPSJtaWRkbGUiPkltYWdlPC90ZXh0Pjwvc3ZnPg==';\" />" +
                 "<div class=\"category\">" + escapeHtml(product.getCategory()) + "</div>" +
@@ -443,7 +443,7 @@ public class BlinkitCloneServer {
                 "</article>";
     }
 
-    private static String renderCheckoutPage(String customer, String card, String order, String total, String paymentMethod) {
+    static String renderCheckoutPage(String customer, String card, String order, String total, String paymentMethod) {
         String maskedCard = card.length() > 4 ? "**** **** **** " + card.substring(card.length() - 4) : escapeHtml(card);
         return "<!DOCTYPE html>\n" +
                 "<html lang=\"en\">\n" +
@@ -597,11 +597,11 @@ public class BlinkitCloneServer {
         }
     }
 
-    private static String renderSignupPage() {
+    static String renderSignupPage() {
         return renderSignupPage(null);
     }
 
-    private static String renderSignupPage(String error) {
+    static String renderSignupPage(String error) {
         String errorHtml = error != null ? "<div style=\"color: #dc2626; margin-bottom: 16px; padding: 12px; background: #fee2e2; border-radius: 8px; font-size: 0.9rem;\">" + escapeHtml(error) + "</div>" : "";
         return "<!DOCTYPE html>\n" +
                 "<html lang=\"en\">\n" +
@@ -673,11 +673,11 @@ public class BlinkitCloneServer {
                 "</html>";
     }
 
-    private static String renderLoginPage() {
+    static String renderLoginPage() {
         return renderLoginPage(null);
     }
 
-    private static String renderLoginPage(String error) {
+    static String renderLoginPage(String error) {
         String errorHtml = error != null ? "<div style=\"color: #dc2626; margin-bottom: 16px; padding: 12px; background: #fee2e2; border-radius: 8px; font-size: 0.9rem;\">" + escapeHtml(error) + "</div>" : "";
         return "<!DOCTYPE html>\n" +
                 "<html lang=\"en\">\n" +
@@ -741,7 +741,7 @@ public class BlinkitCloneServer {
                 "</html>";
     }
 
-    private static String renderSignupSuccess(User user, String sessionId) {
+    static String renderSignupSuccess(User user, String sessionId) {
         return "<!DOCTYPE html>\n" +
                 "<html lang=\"en\">\n" +
                 "<head>\n" +
@@ -770,7 +770,7 @@ public class BlinkitCloneServer {
                 "</html>";
     }
 
-    private static String renderLoginSuccess(User user, String sessionId) {
+    static String renderLoginSuccess(User user, String sessionId) {
         return "<!DOCTYPE html>\n" +
                 "<html lang=\"en\">\n" +
                 "<head>\n" +
@@ -799,7 +799,7 @@ public class BlinkitCloneServer {
                 "</html>";
     }
 
-    private static String escapeHtml(String value) {
+    static String escapeHtml(String value) {
 
         return value.replace("&", "&amp;")
                 .replace("<", "&lt;")
