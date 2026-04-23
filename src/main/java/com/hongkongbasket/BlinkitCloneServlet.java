@@ -8,8 +8,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.io.InputStream;
 
-@WebServlet(urlPatterns = {"/", "/login", "/signup", "/logout", "/checkout"})
+@WebServlet(urlPatterns = {"/", "/login", "/signup", "/logout", "/checkout", "/images/*"})
 public class BlinkitCloneServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -29,7 +30,11 @@ public class BlinkitCloneServlet extends HttpServlet {
                 writeHtml(resp, renderLogoutPage());
                 break;
             default:
-                resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+                if (path.startsWith("/images/")) {
+                    serveImage(resp, path.substring("/images/".length()));
+                } else {
+                    resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+                }
                 break;
         }
     }
@@ -114,6 +119,37 @@ public class BlinkitCloneServlet extends HttpServlet {
         String paymentMethod = defaultString(req.getParameter("paymentMethod"), "HK Online Pay");
 
         writeHtml(resp, BlinkitCloneServer.renderCheckoutPage(customer, card, order, total, paymentMethod));
+    }
+
+    private void serveImage(HttpServletResponse resp, String imageName) throws IOException {
+        if (imageName == null || imageName.isBlank() || imageName.contains("..")) {
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+
+        String resourcePath = "images/" + imageName;
+        try (InputStream inputStream = BlinkitCloneServer.class.getClassLoader().getResourceAsStream(resourcePath)) {
+            if (inputStream == null) {
+                resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+
+            String contentType;
+            if (imageName.endsWith(".svg")) {
+                contentType = "image/svg+xml";
+            } else if (imageName.endsWith(".png")) {
+                contentType = "image/png";
+            } else if (imageName.endsWith(".jpg") || imageName.endsWith(".jpeg")) {
+                contentType = "image/jpeg";
+            } else {
+                contentType = "application/octet-stream";
+            }
+
+            resp.setContentType(contentType);
+            try (var out = resp.getOutputStream()) {
+                inputStream.transferTo(out);
+            }
+        }
     }
 
     private String renderLogoutPage() {
