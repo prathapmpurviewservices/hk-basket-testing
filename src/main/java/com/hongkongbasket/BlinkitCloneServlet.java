@@ -18,7 +18,7 @@ public class BlinkitCloneServlet extends HttpServlet {
 
         switch (path) {
             case "/":
-                writeHtml(resp, BlinkitCloneServer.renderHomePage(ProductStore.loadProducts()));
+                writeHtml(resp, BlinkitCloneServer.renderHomePage(ProductStore.loadProducts(), req.getContextPath()));
                 break;
             case "/login":
                 writeHtml(resp, BlinkitCloneServer.renderLoginPage());
