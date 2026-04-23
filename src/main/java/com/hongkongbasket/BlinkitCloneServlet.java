@@ -9,8 +9,6 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 @WebServlet(urlPatterns = {"/", "/login", "/signup", "/logout", "/checkout", "/images/*"})
 public class BlinkitCloneServlet extends HttpServlet {
